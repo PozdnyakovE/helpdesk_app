@@ -1,0 +1,39 @@
+volumes:
+  helpdesk_data:
+
+services:
+  database:
+    image: postgres:17-alpine
+    container_name: db_container
+    env_file: .env
+    volumes:
+      - helpdesk_data:${PGDATA}
+    ports:
+      - "9510:${DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost -p ${DB_PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+  backend:
+    container_name: app_container
+    build:
+      context: ../src
+    volumes:
+      - ../src:/app
+      # - ${LOGS_DIR}:/app/logs
+    env_file: .env
+    depends_on:
+      - database
+    ports:
+      - "8000:8000"
