@@ -51,7 +51,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     @declared_attr.directive
     def __tablename__(cls) -> str:  # noqa: N805
-        return cls.__name__.lower()
+        return cls.__name__.lower() + 's'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     created_at: Mapped[created_at]
