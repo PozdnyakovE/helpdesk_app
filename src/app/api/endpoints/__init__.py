@@ -1,0 +1,1 @@
+from .test_endpoint import router as test_router  # noqa
